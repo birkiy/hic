@@ -88,7 +88,7 @@ workflow PAIRTOOLS {
     )
 
     SAMTOOLS_FLAGSTAT(
-        SAMTOOLS_SORT.out.bam.join(SAMTOOLS_INDEX.out.bai)
+        SAMTOOLS_SORT.out.bam.join(SAMTOOLS_INDEX.out.index)
     )
 
     PAIRTOOLS_DEDUP(
@@ -110,7 +110,7 @@ workflow PAIRTOOLS {
 
     emit:
     pairs = PAIRIX.out.index
-    bam = PAIRTOOLS_SPLIT.out.bam.join(SAMTOOLS_INDEX.out.bai)
+    bam = PAIRTOOLS_SPLIT.out.bam.join(SAMTOOLS_INDEX.out.index)
     stats = PAIRTOOLS_STATS.out.stats.map{it->it[1]}
     flagstat = SAMTOOLS_FLAGSTAT.out.flagstat
 }
