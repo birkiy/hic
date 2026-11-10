@@ -27,7 +27,9 @@ process COOLER_BALANCE {
     extension = cool.getExtension()
     if ("$cool" == "${prefix}.${extension}") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
     """
-    ln -s ${cool} ${prefix}.${extension}
+    # a copy, not a symlink: cooler balance writes the weights into the file, which would modify COOLER_CLOAD's output
+    # while COOLER_ZOOMIFY reads it (HDF5 lock error, or a weight column in the unbalanced mcool)
+    cp -L ${cool} ${prefix}.${extension}
 
     cooler balance \\
         $args \\
