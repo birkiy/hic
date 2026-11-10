@@ -79,7 +79,7 @@ workflow PAIRTOOLS {
     // Manage BAM files
     SAMTOOLS_SORT(
         PAIRTOOLS_SPLIT.out.bam,
-        fasta,
+        fasta.map { meta, f -> [meta, f, []] }.first(),   // samtools/sort now takes [meta, fasta, fai]
         "bai"
     )
 
