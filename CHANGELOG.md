@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed`
 
+- LOOPS: the MACS3 anchor peaks follow FitHiChIP's PeakInferHiChIP: HiC-Pro dangling-end, self-circle and re-ligation pairs plus the cis valid pairs < 1 kb (pairtools: the cis valid pairs < 1 kb), each end a `--loops_read_length` (75) bp interval, MACS3 without `--keep-dup all` ([#189](https://github.com/nf-core/hic/issues/189))
 - [#174](https://github.com/nf-core/hic/pull/174) - HiC-Pro default mapping options, closer to BWA-MEM/pairtools results
 - [#181](https://github.com/nf-core/hic/pull/181) - COOLTOOLS_EIGSCIS orients A/B compartments with a GC content phasing track
 - [#194](https://github.com/nf-core/hic/pull/194) - Template update to nf-core/tools 2.13.1
@@ -42,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed`
 
+- `--processing pairtools`: SAMTOOLS_INDEX emits `index` and SAMTOOLS_SORT takes `[meta, fasta, fai]` since the module update; the pairtools path stopped with `No such property: bai`
+- COOLER_BALANCE balances a copy of the cool instead of writing the weights into COOLER_CLOAD's output, which COOLER_ZOOMIFY reads at the same time (HDF5 lock error; weights in the unbalanced mcool)
 - [#173](https://github.com/nf-core/hic/pull/173) - cooltools version parsing in COOLTOOLS_INSULATION and COOLTOOLS_EIGSCIS ([#172](https://github.com/nf-core/hic/issues/172))
 - [#236](https://github.com/nf-core/hic/pull/236) - `--bin_size` accepts a single value ([#62](https://github.com/nf-core/hic/issues/62))
 - [#236](https://github.com/nf-core/hic/pull/236) - `MPLCONFIGDIR` set to `${baseDir}/mplconfig`, so Matplotlib warnings no longer break version parsing ([#227](https://github.com/nf-core/hic/issues/227))

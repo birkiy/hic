@@ -363,7 +363,13 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.(bed|narrowPeak|broadPeak)(\\.gz)?$",
                     "fa_icon": "fas fa-file",
-                    "description": "BED file of 1D anchor peaks (e.g. ChIP-seq peaks of the HiChIP target) used by FitHiChIP. When unset, anchors are inferred from the valid pairs with MACS3."
+                    "description": "BED file of 1D anchor peaks (e.g. ChIP-seq peaks of the HiChIP target) used by FitHiChIP. When unset, anchors are inferred with MACS3 as FitHiChIP's PeakInferHiChIP does: from the HiC-Pro dangling-end, self-circle and re-ligation pairs and the cis valid pairs < 1 kb (the latter only with pairtools processing)."
+                },
+                "loops_read_length": {
+                    "type": "integer",
+                    "default": 75,
+                    "minimum": 1,
+                    "description": "Length of the interval each read end becomes for the MACS3 anchor peaks (PeakInferHiChIP -L; FitHiChIP's default 75)."
                 },
                 "macs_gsize": {
                     "type": ["number", "string"],

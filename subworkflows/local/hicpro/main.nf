@@ -51,6 +51,12 @@ workflow HICPRO {
         )
         ch_valid_pairs = GET_VALID_INTERACTION.out.valid_pairs
         ch_valid_stats = GET_VALID_INTERACTION.out.stats
+        // dangling-end, self-circle and re-ligation pairs of every chunk, per sample (1D anchors of the LOOPS subworkflow)
+        ch_ligation_pairs = GET_VALID_INTERACTION.out.de_pairs
+            .mix(GET_VALID_INTERACTION.out.sc_pairs, GET_VALID_INTERACTION.out.re_pairs)
+            .map { meta, f -> [meta.id, f] }
+            .groupTuple()
+            .map { id, files -> [[id: id], files] }
 
     }else{
 
@@ -62,6 +68,7 @@ workflow HICPRO {
         )
         ch_valid_pairs = GET_VALID_INTERACTION_DNASE.out.valid_pairs
         ch_valid_stats = GET_VALID_INTERACTION_DNASE.out.stats
+        ch_ligation_pairs = channel.empty()
     }
 
 
@@ -135,6 +142,7 @@ workflow HICPRO {
 
     emit:
     pairs = HICPRO2PAIRS.out.pairs
+    ligation_pairs = ch_ligation_pairs
     mqc = MERGE_VALID_INTERACTION.out.mqc.concat(MERGE_STATS.out.mqc)
     raw_maps = ch_hicpro_raw_maps
     iced_maps = ch_hicpro_iced_maps

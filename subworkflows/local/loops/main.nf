@@ -13,15 +13,16 @@ include { FITHICHIP             } from '../../../modules/local/fithichip/main'
 workflow LOOPS {
 
     take:
-    pairs     // [meta, pairs, index]
-    cool      // [meta, cool, resolution]
-    chromsize // [meta, chromsize]
+    pairs          // [meta, pairs, index]
+    cool           // [meta, cool, resolution]
+    chromsize      // [meta, chromsize]
+    ligation_pairs // [meta, [DEPairs, SCPairs, REPairs]] from HiC-Pro processing; empty channel otherwise
 
     main:
 
     //
-    // 1D anchors: either provided with --loops_peaks, or inferred from the 5' ends of the valid pairs,
-    // the approach of FitHiChIP's PeakInferHiChIP (MACS3 on single-end reads, --nomodel --extsize 147)
+    // 1D anchors: either provided with --loops_peaks, or inferred as FitHiChIP's PeakInferHiChIP does: MACS3 on the ends of the
+    // HiC-Pro dangling-end / self-circle / re-ligation pairs and of the cis valid pairs < 1 kb (only the latter without HiC-Pro)
     //
     if (params.loops_peaks) {
         ch_user_peaks = channel.value(file(params.loops_peaks, checkIfExists: true))
@@ -31,8 +32,15 @@ workflow LOOPS {
             .combine(ch_user_peaks)   // [id, peaks]
         ch_macs_peaks = channel.empty()
     } else {
+        ch_pairs_lig = pairs
+            .map { meta, p, idx -> [meta.id, meta, p, idx] }
+            .join(ligation_pairs.map { meta, files -> [meta.id, files] }, remainder: true)
+            .filter { it[1] != null }
+            .map { _id, meta, p, idx, files -> [meta, p, idx, files ?: []] }
+
         PAIRS2BED(
-            pairs
+            ch_pairs_lig,
+            params.loops_read_length
         )
 
         // MACS3 effective genome size: --macs_gsize, else the total length of the chromosome sizes file

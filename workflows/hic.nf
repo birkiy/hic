@@ -143,6 +143,7 @@ workflow HIC {
             ch_map_res
         )
         ch_pairs = HICPRO.out.pairs
+        ch_ligation_pairs = HICPRO.out.ligation_pairs
         ch_process_mqc = HICPRO.out.mqc
     }else if (params.processing == 'pairtools'){
         PAIRTOOLS(
@@ -153,6 +154,7 @@ workflow HIC {
             ch_chromosome_size
         )
         ch_pairs = PAIRTOOLS.out.pairs
+        ch_ligation_pairs = channel.empty()
         ch_process_mqc = PAIRTOOLS.out.stats
     }
 
@@ -226,7 +228,8 @@ workflow HIC {
         LOOPS(
             ch_pairs,
             ch_cool_loops,
-            ch_chromosome_size
+            ch_chromosome_size,
+            ch_ligation_pairs
         )
     }
 
